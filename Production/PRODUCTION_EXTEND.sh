@@ -1,0 +1,107 @@
+#!/bin/bash
+# PART3 OF PRODUCTION SCRIPTS
+# DATE WRITTEN: SEPTEMBER 5, 2020
+# DATE UPDATED: AUGUST 13, 2021
+# PURPOSE: extend MD simulation 
+
+echo " "
+echo " | PRODUCTION SCRIPT | EXTEND MD SIMULATION | "
+echo " "
+
+# ========================================================
+# ------------------    REMINDERS    ---------------------
+# ========================================================
+
+# 1. only works for productions files labelled as: system_mdd${compvn}_${molec1}_${molec2}#
+# 2. declare important variables in section I, for:
+#    a. desired length of extension in nsteps
+#    b. number of threads designated for extension of production run
+#
+# 3. if script is run in:
+#    a. CSRC
+#       nohup "./PRODUCTION_EXTEND.sh" > out.log &
+#    b. ASTI
+#       sbatch PRODUCTION_EXTEND.sub
+
+# <=======================================================
+# <==== I. DECLARE VARIABLES
+# <=======================================================
+
+extend=25000000
+srvcnt=12
+
+# <=======================================================
+# <==== II. DETERMINE PAIR
+# <=======================================================
+
+ls *_mdd*.gro > list1.txt
+
+detnme=$( tail -1 list1.txt )
+molec1=${detnme:12:3}
+molec2=${detnme:16:3}
+
+# <=======================================================
+# <==== III. DETERMINE PRESENT FILES
+# <=======================================================
+
+compvl=1
+while read -r row
+do
+compvt=${row:10:1}
+if [[ $compvt -gt $compvl ]]; then
+compvl=$compvt
+fi
+compvn=$(( $compvl + 1 ))
+done < list1.txt
+
+checkc="000${compvl}"
+checkn="000${compvn}"
+
+alignc=$(echo $checkc | rev | cut -b 1-4 | rev)
+alignn=$(echo $checkn | rev | cut -b 1-4 | rev)
+
+# <=======================================================
+# <==== IV. EXTENSION TPR CONVERT 
+# <=======================================================
+
+gmx convert-tpr -s system_mdd${compvl}_${molec1}_${molec2}.tpr -nsteps $extend -o system_mdd${compvn}_${molec1}_${molec2}.tpr
+
+[[ ! -f system_mdd${compvn}_${molec1}_${molec2}.tpr ]] &&
+echo "ERROR [4]: system_mdd${compvn}_${molec1}_${molec2}.tpr DOES NOT EXIST" && exit
+
+# <=======================================================
+# <==== V. EXTENSION PRODUCTION 
+# <=======================================================
+
+gmx mdrun -s system_mdd${compvn}_${molec1}_${molec2}.tpr -cpi system_mdd${compvl}_${molec1}_${molec2}.cpt -noappend -deffnm system_mdd${compvn}_${molec1}_${molec2} -v # -nt ${srvcnt}
+
+[[ ! -f system_mdd${compvn}_${molec1}_${molec2}.part${alignn}.gro ]] &&
+echo "ERROR [5]: system_mdd${compvn}_${molec1}_${molec2}.part${alignn}.gro DOES NOT EXIST" && exit
+
+# <=======================================================
+# <==== VI. EXTENSION TRJCAT 
+# <=======================================================
+
+if [[ $compvl == 1 ]]; then
+gmx trjcat -f system_mdd1_${molec1}_${molec2}.xtc system_mdd2_${molec1}_${molec2}.part0002.xtc -o system_mdd1-2_${molec1}_${molec2}.xtc
+
+[[ ! -f system_mdd1-2_${molec1}_${molec2}.xtc ]] &&
+echo "ERROR [6-A]: system_mdd1-2_${molec1}_${molec2}.xtc DOES NOT EXIST" && exit
+
+else
+gmx trjcat -f system_mdd1-${compvl}_${molec1}_${molec2}.xtc system_mdd${compvn}_${molec1}_${molec2}.part${alignn}.xtc -o system_mdd1-${compvn}_${molec1}_${molec2}.xtc
+
+[[ ! -f system_mdd1-${compvn}_${molec1}_${molec2}.xtc ]] &&
+echo "ERROR [6-B]: system_mdd1-${compvn}_${molec1}_${molec2}.xtc DOES NOT EXIST" && exit
+fi
+
+# ========================================================
+# ------------------      END      -----------------------
+# ========================================================
+
+echo "...DONE"
+echo " "
+
+duration=$SECONDS
+echo " | TIME ELAPSED: $(($duration / 60)) MINUTE/S and $(($duration % 60)) SECOND/S |"
+echo " " 

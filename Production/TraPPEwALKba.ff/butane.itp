@@ -1,0 +1,48 @@
+;     TraPPE n-butane rttabag2019
+;     Simulations using this force field should be performed with a spherical cutoff of 14 Å and analytic tail corrections for the Lennard-Jones interactions.
+;     The Ewald summation should be used for Coulomb interactions.
+;     The standard TraPPE BUTbonded potential (uNB shown above) is calculated for all intermolecular interactions and those intramolecular interactions involving (pseudo)atoms separated by four or more bonds.
+;     Intramolecular 1-4 Lennard-Jones and Coulomb interactions are excluded.
+
+[ moleculetype ]
+; Name nrexcl
+BUT      3
+
+[ atoms ]
+;   nr      type  resnr resid  atom  cgnr   charge     mass
+     1       CH3     1  BUT     C04A     1    0.000  15.0350   
+     2       CH2     1  BUT     C04B     1    0.000  14.0270   
+     3       CH2     1  BUT     C04C     1    0.000  14.0270       
+     4       CH3     1  BUT     C04D     1    0.000  15.0350   
+
+[ constraints ]
+; ai    aj  fu   nm      TraPPE uses fixed bond lengths
+   1    2   1    0.1540   
+   2    3   1    0.1540  
+   3    4   1    0.1540         
+
+[ exclusions ]
+; ai  aj  Intramolecular 1-4 Lennard-Jones and Coulomb interactions are excluded.
+   1   4                                                                             
+                                                                                                                                                                                                                                                              
+[ angles ]
+; ai  aj  ak  fu    theta (deg) ktheta (kJ mol −1 rad −2)
+   1   2   3   1    114.0       519.65    
+   2   3   4   1    114.0       519.65                            
+
+[ dihedrals ]
+; ai  aj  ak  al  fu   C1               C2                  C3               C4         
+   4   3   2   1   5   5.90376536922018	-1.13392603590436	13.158796755123  0.0000000              
+
+ #ifdef POSRES_BUTANE
+[ position_restraints ]
+;  i funct       fcx        fcy        fcz
+   1    1       1000       1000       1000
+   2    1       1000       1000       1000
+   3    1       1000       1000       1000
+   4    1       1000       1000       1000
+#endif 
+
+
+
+

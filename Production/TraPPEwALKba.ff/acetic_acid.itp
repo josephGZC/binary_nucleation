@@ -1,0 +1,36 @@
+;     TraPPE acetic acid jgcabinta2021  (Kamath 2004 - An Improved Force Field for...Carboxylic Acids)
+;     Simulations using this force field should be performed with a spherical cutoff of 14 Å and analytic tail corrections for the Lennard-Jones interactions.
+;     The Ewald summation should be used for Coulomb interactions.
+;     The standard TraPPE nonbonded potential (uNB shown above) is calculated for all intermolecular interactions and those intramolecular interactions involving (pseudo)atoms separated by four or more bonds.
+;     Intramolecular 1-4 Lennard-Jones and Coulomb interactions are excluded.
+
+[ moleculetype ]
+; Name nrexcl
+ACT      3
+
+[ atoms ]
+;   nr      type  resnr resid  atom  cgnr   charge     mass
+     1       CD3     1   ACT    CQA     1    0.120  15.0350   
+     2        CB     1   ACT    CQB     1    0.420  12.0107   
+     3        OB     1   ACT    OQA     1   -0.450  15.9994   
+     4        OC     1   ACT    OQB     1   -0.460  15.9994   
+     5        HB     1   ACT    HQA     1    0.370   1.0080   
+
+[ constraints ]
+; ai  aj  fu    nm   TraPPE uses fixed bond lengths
+   1   2   1    0.1520   ;   CQA  CQB  CH3--C  
+   2   3   1    0.1214   ;   CQB  OQA  C==0 
+   2   4   1    0.1364   ;   OQA  OQB  C--O 
+   4   5   1    0.0970   ;   OQB  HQA  O--H
+
+[ exclusions ]
+; ai  aj  Intramolecular 1-4 Lennard-Jones and Coulomb interactions are excluded.
+   1   5                                              ;   CQA  HQA   
+   3   5                                              ;   OQA  HQA   
+ 
+[ angles ]
+; ai  aj  ak  fu    theta       ktheta...
+   1   2   3   1    126.0       335.070723655095    ;   CQA  CQB  OQA  <CH3--C==O 
+   1   2   4   1    111.0       293.498673573818    ;   CQA  CQB  OQB  <CH3--C--O
+   3   2   4   1    123.0       335.070723655095    ;   OQA  CQB  OQB  <O==C--O  
+   2   4   5   1    107.0       146.333616286096    ;   CQB  OQB  HQA  <C--O--H 

@@ -1,0 +1,32 @@
+[ atomtypes ]
+;name | at.num | mass,m (amu) | charge,q (e) | ptype | sigma,σ (nm) | epsilon,ε (kJ/mol)
+ OWT4EW     8 	16.0000           0.000          A      0.316435         0.680946
+ HWT4EW     1 	 1.0080           0.52422        A      0.000000         0.000000
+  MW        0    0.0000          -1.04844        D      0.000000         0.000000  
+  CH3       6 	15.0350           0.000          A      0.375000         0.814817  ;        [CH3]--CHx
+  CH2       6 	14.0270           0.000          A      0.395000         0.382465  ; (CHx)--[CH2]
+  CA        6   14.0270           0.265          A      0.395000         0.382465  ;   CHx--[CH2]--OH    
+  CHA       6   13.0170           0.265          A      0.433000         0.083140  ;   (CHx)2--[CH]-OH tertiary carbon
+  OA        8   15.9994          -0.700          A      0.302000         0.773245  ;   CHx--[O]--H
+  HA        1    1.0080           0.435          A      0.000000         0.000000  ;     O--[H]
+  CD3       6   15.0350           0.120          A      0.375000         0.814812  ;        [CH3]-C=  ACETIC ACID
+  CB        6   12.0107           0.420          A      0.390000         0.340891  ;     O==[C]       ACETIC ACID
+  OB        8   15.9994          -0.450          A      0.305000         0.656838  ;        [O]==C    ACETIC ACID
+  OC        8   15.9994          -0.460          A      0.302000         0.773240  ;        [O]--H    ACETIC ACID
+  HB        1    1.0080           0.370          A      0.000000         0.000000  ;     O--[H]       ACETIC ACID
+  NL        7 	14.0067           0.000          A      0.342000         1.538175
+  HN        1 	 1.0080           0.410          A      0.000000         0.000000  
+  DN        0    0.0000          -1.230          D      0.000000         0.000000
+  AR1       18   39.948           0.000          A      0.334500         0.978638      
+  AR2       18   39.948           0.000          A      0.501750         0.978638 
+  AR3       18   39.948           0.000          A      0.669000         0.978638 
+  AR4       18   39.948           0.000          A      0.836250         0.978638 
+  
+
+[ nonbond_params ]
+; i    j func          c6           c12
+; calculate everything by Lorentz-Berthelot rules, csombination rule 2 in forcefield.itp
+
+[ pairtypes ]
+; i    j func          c6           c12
+; none 

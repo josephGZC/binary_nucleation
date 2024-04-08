@@ -1,0 +1,66 @@
+;     TraPPE 1-octanol jgcabinta2022      
+;     Simulations using this force field should be performed with a spherical cutoff of 14 Å and analytic tail corrections for the Lennard-Jones interactions.
+;     The Ewald summation should be used for Coulomb interactions.
+;     The standard TraPPE nonbonded potential (uNB shown above) is calculated for all intermolecular interactions and those intramolecular interactions involving (pseudo)atoms separated by four or more bonds.
+;     Intramolecular 1-4 Lennard-Jones and Coulomb interactions are excluded.
+
+[ moleculetype ]
+; Name nrexcl
+OCTA      3
+
+[ atoms ]
+;   nr      type  resnr resid  atom  cgnr   charge     mass
+     1       CH3     1  OCTA    CAA     1    0.000  15.0350   
+     2       CH2     1  OCTA    CAB     1    0.000  14.0270   
+     3       CH2     1  OCTA    CAC     1    0.000  14.0270   
+     4       CH2     1  OCTA    CAD     1    0.000  14.0270   
+     5       CH2     1  OCTA    CAE     1    0.000  14.0270   
+     6       CH2     1  OCTA    CAF     1    0.000  14.0270   
+     7       CH2     1  OCTA    CAG     1    0.000  14.0270   
+     8        CA     1  OCTA    CAH     1    0.265  14.0270   
+     9        OA     1  OCTA    OAE     1   -0.700  15.9994   
+    10        HA     1  OCTA    HAJ     1    0.435   1.0080   
+
+[ constraints ]
+; ai  aj  fu    nm   TraPPE uses fixed bond lengths
+   1   2   1    0.1540   ;   CAA  CAB   
+   2   3   1    0.1540   ;   CAB  CAC   
+   3   4   1    0.1540   ;   CAC  CAD   
+   4   5   1    0.1540   ;   CAD  CAE   
+   5   6   1    0.1540   ;   CAE  CAF   
+   6   7   1    0.1540   ;   CAF  CAG   
+   7   8   1    0.1540   ;   CAG  CAH   
+   8   9   1    0.1430   ;   CAH  OAE   
+   9  10   1    0.0945   ;   OAE  HAJ   
+
+[ exclusions ]
+; ai  aj  Intramolecular 1-4 Lennard-Jones and Coulomb interactions are excluded.
+   1   4                                              ;   CAA  CAD   
+   2   5                                              ;   CAB  CAE   
+   3   6                                              ;   CAC  CAF    
+   4   7                                              ;   CAD  CAG    
+   5   8                                              ;   CAE  CAH    
+   6   9                                              ;   CAF  OAE    
+   7   10                                             ;   CAG  HAJ    
+ 
+[ angles ]
+; ai  aj  ak  fu    theta       ktheta...
+   1   2   3   1    114.0       519.653741340536    ;   CAA  CAB  CAC   
+   2   3   4   1    114.0       519.653741340536    ;   CAB  CAC  CAD   
+   3   4   5   1    114.0       519.653741340536    ;   CAC  CAD  CAE   
+   4   5   6   1    114.0       519.653741340536    ;   CAD  CAE  CAF   
+   5   6   7   1    114.0       519.653741340536    ;   CAE  CAF  CAG   
+   6   7   8   1    114.0       519.653741340536    ;   CAF  CAG  CAH   
+   7   8   9   1    109.5       419.048777017008    ;   CAG  CAH  OAE   
+   8   9   10  1    108.5       460.621076324251    ;   CAH  OAE  HAJ   
+
+[ dihedrals ]
+; ai  aj  ak  al  fu   C1               C2                    C3                C4         Fourier Proper Dihedral Function
+   4   3   2   1   5   5.90376536922018	  -1.13392603590436	  13.158796755123   0.0000000 ; dih   CAD  CAC  CAB  CAA   
+   5   4   3   2   5   5.90376536922018	  -1.13392603590436	  13.158796755123   0.0000000 ; dih   CAE  CAD  CAC  CAB   
+   6   5   4   3   5   5.90376536922018	  -1.13392603590436	  13.158796755123   0.0000000 ; dih   CAF  CAE  CAD  CAC   
+   7   6   5   4   5   5.90376536922018	  -1.13392603590436	  13.158796755123   0.0000000 ; dih   CAG  CAF  CAE  CAD   
+   8   7   6   5   5   5.90376536922018	  -1.13392603590436	  13.158796755123   0.0000000 ; dih   CAH  CAG  CAF  CAE   
+   9   8   7   6   5   2.9369998014581	  -0.88698657801933	  12.803104162250   0.0000000 ; dih   OAE  CAH  CAG  CAF 
+  10   9   8   7   5   3.48907993625828	  -0.48506558831691	   3.125072883524   0.0000000 ; dih   HAJ  OAE  CAH  CAG   
+ 

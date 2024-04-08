@@ -1,0 +1,20 @@
+;none
+
+; get the constraint distances for dummy atom constructions
+;#include "ff_dum.itp"
+; not necessary
+
+[ constrainttypes ]
+; now the constraints for the rigid NH3 groups
+;not necessary implicit in topology file
+
+
+; bond-, angle- and dihedraltypes for specbonds:
+[ bondtypes ]
+;none
+
+[ angletypes ]s
+;none
+
+[ dihedraltypes ]
+;none

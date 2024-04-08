@@ -1,0 +1,15 @@
+ OWT4EW  16.0000  ;     TIP4P-Ew WATER OXYGEN
+ HWT4EW  1.00800  ;     TIP4P-Ew WATER HYDROGEN
+    MW   0.00000  ;     Dummy particle in TIP4P etc.
+   CH3  15.03500  ;     aliphatic CH3-group
+   CH2  14.02700  ;     aliphatic or sugar CH2-group
+    CA  14.02700  ;     aliphatic CH2 connected to alcohol O 
+    OA  15.99940  ;     aliphatic O in alcohol
+    HA   1.00800  ;     aliphatic H in alcohol
+    NL  14.00670  ;     Nitrogen (NH3)      
+    HN   1.00800  ;     Hydrogen (NH3)  
+    DN   0.00000  ;     NH3V Dummy mass in rigid TraPPE NH3 group
+    Ar1  39.948	  ;		Argon 1
+    Ar2  39.948   ;     Argon 2
+    Ar3  39.948   ;     Argon 3
+    Ar4  39.948   ;     Argon 4

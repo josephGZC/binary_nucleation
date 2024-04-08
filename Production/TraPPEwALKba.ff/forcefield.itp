@@ -1,0 +1,10 @@
+#define _FF_TRAPPEWNBA
+
+[ defaults ]
+; nbfunc	comb-rule	            gen-pairs	    fudgeLJ	fudgeQQ    pp144 GMX-514 Manual
+; LJ        sigma epsilon nm kJ/mol
+  1		    2		                no		        1.0     1.0
+
+#include "ffnonbonded.itp"
+#include "ffbonded.itp"
+

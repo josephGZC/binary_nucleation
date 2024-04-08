@@ -1,0 +1,53 @@
+; TraPPE propylene glycol jgcabinta2021 (Cardona 2015 - Molecular Dynamics Simulations for the Prediction of the Dielectric Spectra...)     
+; Simulations using this force field should be performed with a spherical cutoff of 14 Å and analytic tail corrections for the Lennard-Jones interactions; the Ewald summation should be used for Coulomb interactions.
+; The standard TraPPE nonbonded potential (uNB shown above) is calculated for all intermolecular interactions and those intramolecular interactions involving (pseudo)atoms separated by four or more bonds.
+; This model specially includes intramolecular 1-4 Coulomb interactions but scales them by a factor of 0.5. All other 1-4 nonbonded intramolecular interactions are excluded.
+; This model also has at least one unprotected hydroxyl hydrogen (which has a partial charge but no Lennard-Jones interaction) in close proximity to a second polar group. An additional short-range repulsive interaction must be used for intramolecular interactions between the hydroxyl hydrogen and an oxygen atom separated by four bonds:
+
+[ moleculetype ]
+; Name nrexcl
+PGY      3
+
+[ atoms ]
+;   nr      type  resnr resid  atom  cgnr   charge     mass
+     1       CH3     1   PGY    CPA     1    0.000  15.0350   ; [CH3]-CH
+     2       CHA     1   PGY    CPC     1    0.265  13.0170   ; (CHx)2-[CH]-O-H
+     3        OA     1   PGY    OPC     1   -0.700  15.9994   ; CH-[O]-H
+     4        HA     1   PGY    HPC     1    0.435   1.0080   ; CH-O-[H]
+     5        CA     1   PGY    CPB     1    0.265  14.0270   ; CH-[CH2]-O-H
+     6        OA     1   PGY    OPB     1   -0.700  15.9994   ; CH2-[O]-H
+     7        HA     1   PGY    HPB     1    0.435   1.0080   ; CH2-O-[H]
+
+[ constraints ]
+; ai  aj  fu    nm   TraPPE uses fixed bond lengths
+   1   2   1    0.1540   ;   CPA  CPC   
+   2   3   1    0.1430   ;   CPC  OPC   
+   3   4   1    0.0945   ;   OPC  HPC  
+   2   5   1    0.1540   ;   CPC  CPB   
+   5   6   1    0.1430   ;   CPB  OPB   
+   6   7   1    0.0945   ;   OPB  HPB   
+
+;[ exclusions ]
+; ai  aj  Intramolecular 1-4 Lennard-Jones and Coulomb interactions are excluded.
+;   1   4                                             ;   CPA  HPC   
+;   1   6                                             ;   CPA  OPB   
+;   2   7                                             ;   CPC  HPB   
+;   3   6                                             ;   OPC  OPB   
+;   4   5                                             ;   CPB  HPC    
+ 
+[ angles ]
+; ai  aj  ak  fu    theta       ktheta...
+   1   2   3   1    109.5       419.048777017008    ;   CPA  CPC  OPC   
+   1   2   5   1    112.0       519.653741340536    ;   CPA  CPC  CPB   
+   2   3   4   1    108.5       460.621076324251    ;   CPC  OPC  HPC   
+   3   2   5   1    109.5       419.048777017008    ;   OPC  CPC  CPB   
+   2   5   6   1    109.5       419.048777017008    ;   CPC  CPB  OPB   
+   5   6   7   1    108.5       460.621076324251    ;   CPB  OPB  HPB   
+
+[ dihedrals ]
+; ai  aj  ak  al  fu   C1          C2             C3        C4         Fourier Proper Dihedral Function
+   4   3   2   1   5   3.48736	  -0.484826	  3.12353   0.0000000 ; dih   CPA CPC OPC HPC   
+   4   3   2   5   5   3.48889	  -0.485039	  3.12490   0.0000000 ; dih   CPB CPC OPC HPC
+   6   5   2   1   5   2.93684	  -0.886938	  12.8024   0.0000000 ; dih   CPA CPC CPB OPB   
+   7   6   5   2   5   3.48889	  -0.485039	  3.12490   0.0000000 ; dih   CPC CPB OPB OPC   
+ 

@@ -1,0 +1,13 @@
+;     TraPPE n-nonane rttabag2019
+;     Simulations using this force field should be performed with a spherical cutoff of 14 Å and analytic tail corrections for the Lennard-Jones interactions.
+;     The Ewald summation should be used for Coulomb interactions.
+;     The standard TraPPE nonbonded potential (uNB shown above) is calculated for all intermolecular interactions and those intramolecular interactions involving (pseudo)atoms separated by four or more bonds.
+;     Intramolecular 1-4 Lennard-Jones and Coulomb interactions are excluded.
+
+[ moleculetype ]
+; Name nrexcl
+ar3      1
+
+[ atoms ]
+;   nr      type  resnr resid  atom  cgnr   charge     mass
+     1       ar3     1  ar3    ar3     1    0.000     39.948   

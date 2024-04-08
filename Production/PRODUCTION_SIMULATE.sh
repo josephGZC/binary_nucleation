@@ -1,0 +1,154 @@
+#!/bin/bash
+# PART2 OF PRODUCTION SCRIPTS 
+# DATE WRITTEN: SEPTEMBER 5, 2020
+# DATE UPDATED: AUGUST 13, 2021
+# PURPOSE: script for commencing nucleation simulations
+
+echo " "
+echo " | PRODUCTION SCRIPT | COMMENCE NUCLEATION MD SIMULATION | "
+echo " "
+
+# ========================================================
+# ------------------    REMINDERS    ---------------------
+# ========================================================
+
+# 1. the following files are required to be in the same directory:
+#    a. unit structure files (two)
+#        - name should be unit_root_{molec}.gro
+#          {molec} is either SOL, NON, BUT, or AMM
+#    b. parameter files (three)
+#        - minimization mdp
+#        - equilibration mdp
+#        - production mdp
+#    c. topology files (three)
+#        - topology of unit molec 1
+#        - topology of unit molec 2
+#        - topology of systems molec 1 & 2
+#    d. forcefield
+#        
+#    SPECIFIC FOR NSRI NUCLEATION PROJECT
+#    - unit_root_{molec1}.gro
+#    - unit_root_{molec2}.gro
+#    - PRODUCTION_TOPOL.py (generates mdp and topology files)
+#       * minim.mdp
+#       * nvt.mdp
+#       * md.mdp
+#       * topol_unit_{molec1}.top
+#       * topol_unit_{molec2}.top
+#       * topol_system_{molec1}_{molec2}.top
+#    - TraPPEwALKba.ff
+#    - PRODUCTION_SIMULATE.sh
+#
+# 2. declare important variables in section I, for:
+#    a. molecule count per type
+#    b. box dimension
+#    c. server count 
+#
+# 3. if script is run in:
+#    a. CSRC
+#       nohup "./PRODUCTION_SIMULATE.sh" > out.log &
+#    b. ASTI
+#       sbatch PRODUCTION_SIMULATE.sub
+
+# <=======================================================
+# <==== I. DECLARE VARIABLES
+# <=======================================================
+
+sysmol=5000 	#molecule count per type
+pbcbox=40   	#box dimension
+srvcnt=12   	#servers
+
+# <=======================================================
+# <==== II. DETERMINE MOLECULES
+# <=======================================================
+
+molec1=$(awk '{if(NR==11) print $3}' PRODUCTION_TOPOL.py | cut -c 2-4)
+molec2=$(awk '{if(NR==12) print $3}' PRODUCTION_TOPOL.py | cut -c 2-4)
+
+# <=======================================================
+# <==== III. UNIT BOX
+# <=======================================================
+
+gmx editconf -f unit_root_${molec1}.gro -box 8 8 8 -center 2 2 2 -o unit_box1_${molec1}.gro
+gmx editconf -f unit_root_${molec2}.gro -box 8 8 8 -center 6 6 6 -o unit_box1_${molec2}.gro
+
+[[ ! -f unit_box1_${molec1}.gro ]] &&
+echo "ERROR [3-A]: unit_box1_${molec1}.gro DOES NOT EXIST" && exit 
+
+[[ ! -f unit_box1_${molec2}.gro ]] &&
+echo "ERROR [3-B]: unit_box1_${molec2}.gro DOES NOT EXIST" && exit 
+
+# <=======================================================
+# <==== IV. ENERGY MINIMIZATION - UNIT
+# <=======================================================
+
+gmx grompp -f minim.mdp -c unit_box1_${molec1}.gro -p topol_unit_${molec1}.top -o unit_emm1_${molec1}.tpr
+gmx mdrun -v -deffnm unit_emm1_${molec1} # -nt ${srvcnt}
+
+[[ ! -f unit_emm1_${molec1}.gro ]] &&
+echo "ERROR [4-A]: unit_emm1_${molec1}.gro DOES NOT EXIST" && exit 
+
+gmx grompp -f minim.mdp -c unit_box1_${molec2}.gro -p topol_unit_${molec2}.top -o unit_emm1_${molec2}.tpr
+gmx mdrun -v -deffnm unit_emm1_${molec2} # -nt ${srvcnt}
+
+[[ ! -f unit_emm1_${molec2}.gro ]] &&
+echo "ERROR [4-B]: unit_emm1_${molec2}.gro DOES NOT EXIST" && exit 
+
+# <=======================================================
+# <==== V. SYSTEM CREATION
+# <=======================================================
+
+count1=$(awk '{if(NR==2) print $1}' unit_emm1_${molec1}.gro)
+count2=$(awk '{if(NR==2) print $1}' unit_emm1_${molec2}.gro)
+totalm=$(( $count1 + $count2 ))
+
+echo "unary alkanes" 		       >   unit_box1_${molec1}_${molec2}.gro
+echo "${totalm}"    		       >>  unit_box1_${molec1}_${molec2}.gro
+sed '1,2d;$d' unit_emm1_${molec1}.gro  >>  unit_box1_${molec1}_${molec2}.gro
+sed '1,2d'    unit_emm1_${molec2}.gro  >>  unit_box1_${molec1}_${molec2}.gro
+
+gmx insert-molecules -ci unit_box1_${molec1}_${molec2}.gro -nmol ${sysmol} -box ${pbcbox} ${pbcbox} ${pbcbox} -o system_box1_${molec1}_${molec2}.gro
+
+[[ ! -f system_box1_${molec1}_${molec2}.gro ]] &&
+echo "ERROR [5]: system_box1_${molec1}_${molec2}.gro DOES NOT EXIST" && exit 
+
+# <=======================================================
+# <==== VI. ENERGY MINIMIZATION - SYSTEM
+# <=======================================================
+
+gmx grompp -f minim.mdp -c system_box1_${molec1}_${molec2}.gro -p topol_system_${molec1}_${molec2}.top -o system_emm1_${molec1}_${molec2}.tpr
+gmx mdrun -v -deffnm system_emm1_${molec1}_${molec2} # -nt ${srvcnt}
+
+[[ ! -f system_emm1_${molec1}_${molec2}.gro ]] &&
+echo "ERROR [6]: system_emm1_${molec1}_${molec2}.gro DOES NOT EXIST" && exit 
+
+# <=======================================================
+# <==== VII. EQUILIBRATION
+# <=======================================================
+
+gmx grompp -f nvt.mdp -c system_emm1_${molec1}_${molec2}.gro -r system_emm1_${molec1}_${molec2}.gro -p topol_system_${molec1}_${molec2}.top -o system_nvt1_${molec1}_${molec2}.tpr
+gmx mdrun -v -deffnm system_nvt1_${molec1}_${molec2} # -nt ${srvcnt}
+
+[[ ! -f system_nvt1_${molec1}_${molec2}.gro ]] &&
+echo "ERROR [7]: system_nvt1_${molec1}_${molec2}.gro DOES NOT EXIST" && exit 
+
+# <=======================================================
+# <==== VIII. PRODUCTION 
+# <=======================================================
+
+gmx grompp -f md.mdp -c system_nvt1_${molec1}_${molec2}.gro -t system_nvt1_${molec1}_${molec2}.cpt -p topol_system_${molec1}_${molec2}.top -o system_mdd1_${molec1}_${molec2}.tpr
+gmx mdrun -v -deffnm system_mdd1_${molec1}_${molec2} # -nt ${srvcnt}
+
+[[ ! -f system_mdd1_${molec1}_${molec2}.gro ]] &&
+echo "ERROR [8]: system_mdd1_${molec1}_${molec2}.gro DOES NOT EXIST" && exit 
+
+# ========================================================
+# ------------------      END      -----------------------
+# ========================================================
+
+echo "...DONE"
+echo " "
+
+duration=$SECONDS
+echo " | TIME ELAPSED: $(($duration / 60)) MINUTE/S and $(($duration % 60)) SECOND/S |"
+echo " "
